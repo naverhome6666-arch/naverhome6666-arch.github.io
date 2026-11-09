@@ -1,0 +1,667 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>풋볼러시 게임소개서</title>
+<meta name="description" content="바벨이 만드는 PC용 3D 축구 매니저 게임 「풋볼러시」의 게임소개서입니다.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link id="webfonts" href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+/* 레이아웃: 회사 홈페이지(index.html)와 같은 「야간 경기장」 — 장마다 중계 화면의 스코어 표시 모양 머리표를 답니다.
+   웹에서는 한 장씩 아래로 이어지고, 인쇄(PDF)에서는 한 장이 A4 가로 한 쪽이 됩니다. */
+:root{
+  --night:#0c1320;
+  --stand:#151e30;
+  --stand-2:#111a2a;
+  --line:#26324a;
+  --chalk:#f1ebdf;
+  --body:#d4d0c8;
+  --soft:#c9c6bf;
+  --muted:#9aa4b8;
+  --kit:#e5472f;
+  --kit-soft:#ff8a72;
+  --peach:#f49a6a;
+  --turf:#4fae63;
+  --ink:#140805;
+  --font-display:"Black Han Sans","IBM Plex Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+  --font-body:"IBM Plex Sans KR","Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",sans-serif;
+  --font-num:"Barlow Condensed","IBM Plex Sans KR","Malgun Gothic",sans-serif;
+  --radius:14px;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{
+  margin:0;background:var(--night);color:var(--chalk);
+  font-family:var(--font-body);font-size:17px;line-height:1.7;
+  -webkit-font-smoothing:antialiased;word-break:keep-all;overflow-wrap:break-word;
+}
+img{max-width:100%;height:auto;display:block}
+a{color:inherit}
+h1,h2,h3{font-family:var(--font-display);font-weight:400;line-height:1.18;margin:0;text-wrap:balance;letter-spacing:-.005em}
+p,ul,ol,dl,dd,figure{margin:0}
+ul,ol{padding:0;list-style:none}
+:focus-visible{outline:3px solid var(--peach);outline-offset:3px;border-radius:6px}
+[hidden]{display:none!important}
+.wrap{max-width:1180px;margin:0 auto;padding-left:max(24px,env(safe-area-inset-left,0px));padding-right:max(24px,env(safe-area-inset-right,0px))}
+@media (max-width:480px){.wrap{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}}
+
+/* 머리 막대 */
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--night)}
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:color-mix(in srgb,var(--night) 88%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.top .wrap{display:flex;align-items:center;gap:10px 18px;min-height:60px;flex-wrap:wrap;padding-block:8px}
+.back{display:inline-flex;align-items:center;gap:8px;text-decoration:none;font-weight:700;font-size:15px;color:var(--chalk);padding:7px 12px 7px 10px;border:1px solid var(--line);border-radius:9px;background:var(--stand)}
+.back:hover{border-color:var(--muted)}
+.back .mark{width:18px;height:18px;background:linear-gradient(180deg,#ffb27a 0,var(--kit) 55%,#8a2414 100%);clip-path:polygon(34% 0,66% 0,66% 30%,80% 30%,80% 63%,96% 63%,96% 100%,4% 100%,4% 63%,20% 63%,20% 30%,34% 30%)}
+.doc-name{font-family:var(--font-display);font-size:19px;white-space:nowrap}
+.doc-name em{font-style:normal;color:var(--kit)}
+.toc{display:flex;gap:2px;margin-left:auto;overflow-x:auto;scrollbar-width:none;max-width:100%}
+.toc::-webkit-scrollbar{display:none}
+.toc a{flex:none;text-decoration:none;color:var(--muted);font-size:14px;font-weight:500;padding:7px 10px;border-radius:8px}
+.toc a:hover{color:var(--chalk);background:var(--stand)}
+.toc a.to-manual{color:var(--kit-soft);font-weight:700}
+@media (max-width:980px){.toc{margin-left:0;flex-basis:100%;order:3;margin-inline:-6px}}
+
+/* 스코어 표시 */
+.bug{display:inline-flex;align-items:stretch;border-radius:7px;overflow:hidden;font-family:var(--font-num);font-weight:600;font-size:15px;letter-spacing:.06em;line-height:1;box-shadow:0 6px 18px rgba(0,0,0,.35)}
+.bug span{display:flex;align-items:center;padding:8px 11px}
+.bug .plat{background:#0a0f19;color:var(--chalk);text-transform:uppercase;border-left:4px solid var(--kit)}
+.bug .state{background:var(--kit);color:var(--ink);font-family:var(--font-body);font-weight:700;font-size:13px;letter-spacing:0}
+
+/* 장 머리 */
+.page{padding-block:92px;border-top:1px solid var(--line);position:relative}
+@media (max-width:700px){.page{padding-block:64px}}
+.chap-head{display:grid;gap:14px;margin-bottom:38px;max-width:48em}
+.chap{display:inline-flex;align-items:stretch;width:max-content;border-radius:7px;overflow:hidden;line-height:1;box-shadow:0 6px 18px rgba(0,0,0,.35)}
+.chap .no{background:var(--kit);color:var(--ink);font-family:var(--font-num);font-weight:700;font-size:17px;letter-spacing:.04em;padding:7px 10px}
+.chap .nm{background:#0a0f19;color:var(--chalk);font-weight:700;font-size:14px;padding:7px 12px;display:flex;align-items:center}
+.chap .en{background:#0a0f19;color:var(--muted);font-family:var(--font-num);font-weight:600;font-size:14px;letter-spacing:.1em;text-transform:uppercase;padding:7px 12px 7px 0;display:flex;align-items:center}
+.chap-head h2{font-size:clamp(30px,3.8vw,44px)}
+.chap-head .desc{color:var(--body);font-size:17px;max-width:42em}
+
+/* 사진 */
+.shot{position:relative;min-width:0}
+.shot button{all:unset;display:block;cursor:zoom-in;border-radius:var(--radius);overflow:hidden;border:1px solid var(--line);background:#000;width:100%;box-sizing:border-box}
+.shot button:focus-visible{outline:3px solid var(--peach);outline-offset:3px}
+.shot img{width:100%;height:100%;object-fit:cover;transition:transform .35s ease}
+.shot button:hover img{transform:scale(1.02)}
+.shot figcaption{margin-top:9px;font-size:14px;color:var(--muted);line-height:1.55}
+.shot figcaption b{color:var(--chalk);font-weight:700;margin-right:6px}
+.r169 button{aspect-ratio:16/9}
+
+/* 표지 */
+.cover{border-top:0;overflow:hidden;padding-block:64px 80px}
+.cover::before,.cover::after{content:"";position:absolute;width:640px;height:640px;border-radius:50%;pointer-events:none;filter:blur(30px)}
+.cover::before{left:-260px;top:-380px;background:radial-gradient(circle,rgba(255,236,200,.16),transparent 65%)}
+.cover::after{right:-240px;top:-400px;background:radial-gradient(circle,rgba(255,236,200,.12),transparent 65%)}
+.cover .wrap{position:relative}
+.cover-grid{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:48px;align-items:center}
+.kicker{display:flex;align-items:center;gap:10px;font-size:14px;font-weight:500;color:var(--muted);margin:24px 0 14px}
+.kicker::before{content:"";width:28px;height:2px;background:var(--kit)}
+.cover h1{font-size:clamp(56px,7.6vw,96px);line-height:1}
+.cover .en{font-family:var(--font-num);font-weight:600;font-size:20px;letter-spacing:.14em;color:var(--muted);text-transform:uppercase;margin-top:10px}
+.cover .lead{margin-top:22px;color:var(--body);font-size:18px;max-width:30em}
+.cover-shot button{aspect-ratio:16/9;box-shadow:0 30px 80px rgba(0,0,0,.55)}
+.nums{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;margin-top:56px}
+.nums div{background:var(--stand);padding:20px 18px;display:flex;flex-direction:column-reverse;gap:6px}
+.nums dd{font-family:var(--font-num);font-weight:700;font-size:44px;line-height:1;font-variant-numeric:tabular-nums}
+.nums dt{font-size:14px;color:var(--muted)}
+@media (max-width:980px){.cover-grid{grid-template-columns:1fr;gap:36px}.nums{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (max-width:480px){.nums{grid-template-columns:repeat(2,minmax(0,1fr))}.nums dd{font-size:38px}}
+
+/* 1장 한눈에 */
+.glance{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:40px;align-items:start}
+.spec{display:grid;border-top:1px solid var(--line)}
+.spec > div{display:grid;grid-template-columns:88px minmax(0,1fr);gap:14px;padding:13px 0;border-bottom:1px solid var(--line)}
+.spec dt{color:var(--muted);font-size:15px;font-weight:500}
+.spec dd{font-size:16px;color:var(--chalk)}
+.loop{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin-top:40px;counter-reset:lp}
+.loop li{position:relative;background:var(--stand);border:1px solid var(--line);border-radius:var(--radius);padding:20px 20px 18px;display:grid;gap:6px;align-content:start}
+.loop .n{font-family:var(--font-num);font-weight:700;font-size:15px;letter-spacing:.08em;color:var(--kit-soft)}
+.loop b{font-family:var(--font-display);font-weight:400;font-size:22px}
+.loop span:last-child{color:var(--soft);font-size:15px;line-height:1.6}
+.loop li:not(:last-child)::after{content:"";position:absolute;right:-13px;top:50%;width:10px;height:10px;border-top:2px solid var(--muted);border-right:2px solid var(--muted);transform:translateY(-50%) rotate(45deg)}
+@media (max-width:980px){.glance{grid-template-columns:1fr}.loop{grid-template-columns:repeat(2,minmax(0,1fr))}.loop li::after{display:none}}
+@media (max-width:480px){.loop{grid-template-columns:1fr}}
+
+/* 특징 목록 */
+.feat{display:grid;gap:12px}
+.feat li{display:grid;grid-template-columns:18px minmax(0,1fr);gap:8px;align-items:baseline;color:#dcd7ce;font-size:16px}
+.feat li::before{content:"";width:10px;height:10px;border-radius:2px;background:var(--kit);transform:translateY(-1px)}
+.feat li b{color:var(--chalk)}
+
+/* 2장 경기 — 웹: 큰 사진 · 특징 / 아래 두 장, 인쇄: 왼쪽 큰 사진 · 특징 / 오른쪽 두 장 */
+.match-grid{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);grid-template-areas:"ov ft" "sd sd";gap:30px 36px;align-items:start}
+.m-ov{grid-area:ov}.m-ft{grid-area:ft}
+.m-side{grid-area:sd;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
+.pair{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
+@media (max-width:900px){.match-grid{grid-template-columns:1fr;grid-template-areas:"ov" "ft" "sd"}.m-side,.pair{grid-template-columns:1fr}}
+
+/* 카드 묶음 (대회 · 영입 · 구단) */
+.cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.card{background:var(--stand);border:1px solid var(--line);border-radius:12px;padding:18px 20px;display:grid;gap:6px;align-content:start;border-top:3px solid var(--c,var(--line))}
+.card h3{font-size:21px;display:flex;align-items:baseline;justify-content:space-between;gap:10px}
+.card h3 small{font-family:var(--font-num);font-weight:600;font-size:14px;letter-spacing:.06em;color:var(--muted);white-space:nowrap}
+.card p{color:var(--soft);font-size:15px;line-height:1.62}
+.card.hot{--c:var(--kit)}
+@media (max-width:900px){.cards{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:560px){.cards{grid-template-columns:1fr}}
+
+/* 3장 대회 */
+.compete .pair{margin:0 0 22px}
+
+/* 4장 영입 · 5장 구단 */
+.split{display:grid;grid-template-columns:minmax(0,6fr) minmax(0,6fr);gap:32px;align-items:start}
+.split .cards{grid-template-columns:repeat(2,minmax(0,1fr))}
+.stack{display:grid;gap:18px}
+.duo{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.duo .shot button{aspect-ratio:1000/840}
+.duo .contain img{object-fit:contain;background:#10151f}
+@media (max-width:900px){.split{grid-template-columns:1fr}}
+@media (max-width:560px){.split .cards{grid-template-columns:1fr}}
+
+/* 6장 연결 */
+.link-wrap{display:grid;grid-template-columns:minmax(0,8fr) minmax(0,3fr);gap:40px;align-items:center}
+.link-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+.link-step{position:relative;background:var(--stand);border:1px solid var(--line);border-radius:var(--radius);padding:24px 22px 22px}
+.link-step .no{font-family:var(--font-num);font-weight:700;font-size:42px;line-height:1;color:var(--line);-webkit-text-stroke:1px var(--muted)}
+.link-step h3{font-size:21px;margin:12px 0 8px}
+.link-step p{color:var(--soft);font-size:15px}
+.who{display:inline-block;margin-top:14px;font-size:13px;font-weight:700;padding:4px 10px;border-radius:999px}
+.who.fc{background:rgba(244,154,106,.16);color:var(--peach)}
+.who.fr{background:rgba(229,71,47,.16);color:var(--kit-soft)}
+.link-step:not(:last-child)::after{content:"";position:absolute;right:-15px;top:50%;width:11px;height:11px;border-top:2px solid var(--muted);border-right:2px solid var(--muted);transform:translateY(-50%) rotate(45deg)}
+.phone{border-radius:26px;padding:7px;background:#05070b;border:1px solid #2b3446;box-shadow:0 24px 60px rgba(0,0,0,.6);max-width:220px;margin-inline:auto;transform:rotate(3deg)}
+.phone img{border-radius:20px;width:100%}
+.phone-cap{text-align:center;font-size:14px;color:var(--muted);margin-top:16px}
+.note{margin-top:18px;font-size:14px;color:var(--muted)}
+@media (max-width:900px){
+  .link-wrap{grid-template-columns:1fr}
+  .link-row{grid-template-columns:1fr}
+  .link-step:not(:last-child)::after{right:50%;top:auto;bottom:-14px;transform:translateX(50%) rotate(135deg)}
+}
+
+/* 7장 제작 */
+.make{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:44px;align-items:start}
+.tools{display:grid;border-top:1px solid var(--line)}
+.tool{display:grid;grid-template-columns:148px minmax(0,1fr);gap:16px;padding:13px 0;border-bottom:1px solid var(--line)}
+.tool b{font-weight:700}
+.tool span{color:var(--soft);font-size:15px}
+.facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;margin-top:20px}
+.fact{background:var(--stand);padding:18px 18px}
+.fact .n{font-family:var(--font-num);font-weight:700;font-size:40px;line-height:1;font-variant-numeric:tabular-nums}
+.fact .n small{font-family:var(--font-body);font-size:15px;font-weight:700;margin-left:3px}
+.fact .l{margin-top:6px;font-size:14px;color:var(--muted)}
+@media (max-width:900px){.make{grid-template-columns:1fr}}
+@media (max-width:480px){.tool{grid-template-columns:1fr;gap:2px}}
+
+/* 8장 출시 · 문의 */
+.release{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:40px;align-items:start}
+.langs{display:flex;flex-wrap:wrap;gap:7px;margin-top:4px}
+.langs span{font-size:13px;font-weight:500;padding:4px 10px;border-radius:999px;border:1px solid var(--line);color:#d8d3ca}
+.mailbox{background:#0a0f19;border:1px solid var(--line);border-radius:var(--radius);padding:26px}
+.mailbox .k{font-size:14px;color:var(--muted)}
+.mailbox .v{font-size:22px;font-weight:700;margin-top:6px;word-break:break-all}
+.mailbox .v .mail{text-decoration:none;border-bottom:2px solid var(--peach)}
+.copy-row{display:flex;align-items:center;gap:12px;margin-top:14px;flex-wrap:wrap}
+.copy{font:inherit;font-size:14px;font-weight:700;color:var(--chalk);background:var(--stand);border:1px solid var(--line);border-radius:8px;padding:8px 14px;cursor:pointer}
+.copy:hover{border-color:var(--muted)}
+#copy-msg{font-size:14px;color:var(--muted)}
+.mailbox hr{border:0;border-top:1px solid var(--line);margin:20px 0}
+.topics{display:grid;gap:10px;margin-top:6px}
+.topics div{display:grid;grid-template-columns:52px minmax(0,1fr);gap:10px;font-size:15px}
+.topics b{color:var(--peach)}
+.topics span{color:var(--body)}
+.home-link{display:inline-flex;align-items:center;gap:8px;margin-top:22px;text-decoration:none;font-weight:700;font-size:15px;padding:11px 16px;border-radius:10px;background:var(--kit);color:#fff}
+.home-link:hover{background:#f05a41}
+@media (max-width:900px){.release{grid-template-columns:1fr}}
+
+.finale{position:relative;margin-top:44px;border-radius:var(--radius);overflow:hidden;border:1px solid var(--line);min-height:230px;display:flex;align-items:flex-end;background:#000}
+.finale img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 40%;opacity:.55}
+.finale::before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(12,19,32,.96) 0,rgba(12,19,32,.7) 45%,rgba(12,19,32,.15) 100%)}
+.finale div{position:relative;padding:30px 34px;display:grid;gap:8px;max-width:40em}
+.finale b{font-family:var(--font-display);font-weight:400;font-size:clamp(26px,3vw,36px);line-height:1.2}
+.finale b em{font-style:normal;color:var(--kit)}
+.finale span{color:var(--body);font-size:16px}
+@media (max-width:560px){.finale div{padding:22px 20px}}
+footer{border-top:1px solid var(--line);padding-block:32px 44px;color:var(--muted);font-size:14px}
+footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px 28px}
+.print-foot{display:none}
+
+/* 크게 보기 */
+.viewer{position:fixed;inset:0;z-index:50;background:rgba(5,8,14,.93);display:none;align-items:center;justify-content:center;padding:calc(56px + env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) calc(24px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.viewer.open{display:flex}
+.viewer figure{max-width:min(1500px,100%);max-height:100%;display:flex;flex-direction:column;align-items:center;gap:12px}
+.viewer img{max-height:calc(100vh - 150px);width:auto;border-radius:12px;border:1px solid var(--line)}
+.viewer figcaption{color:var(--chalk);font-size:15px;text-align:center}
+.viewer .close{position:absolute;top:calc(12px + env(safe-area-inset-top,0px));right:calc(14px + env(safe-area-inset-right,0px));font:inherit;font-weight:700;font-size:15px;background:var(--stand);color:var(--chalk);border:1px solid var(--line);border-radius:10px;padding:9px 14px;cursor:pointer}
+
+/* ===== 인쇄 (PDF) — 한 장 = A4 가로 한 쪽. PDF 를 만들 때 배율 0.8 로 찍어 1400 × 990 px 한 쪽에 맞춥니다. ===== */
+@page{size:A4 landscape;margin:0}
+@media print{
+  html,body{background:var(--night);-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  body{font-size:16px}
+  .top,.viewer,footer,.copy-row,.home-link,body::before{display:none!important}
+  .wrap{max-width:none;padding:0}
+  .page{width:1400px;height:989px;overflow:hidden;padding:54px 66px 70px;border-top:0;break-after:page;page-break-after:always;display:flex;flex-direction:column}
+  .page:last-of-type{break-after:auto;page-break-after:auto}
+  .page > .wrap{flex:1;min-height:0;display:flex;flex-direction:column}
+  .print-foot{display:flex;position:absolute;left:66px;right:66px;bottom:26px;justify-content:space-between;font-size:12px;color:var(--muted);border-top:1px solid var(--line);padding-top:10px}
+  .print-foot .pg{font-family:var(--font-num);font-weight:600;letter-spacing:.08em}
+  .chap-head{margin-bottom:26px;gap:10px}
+  .chap-head h2{font-size:38px}
+  .chap-head .desc{font-size:16px}
+  .shot button:hover img{transform:none}
+  /* 표지 */
+  .cover{padding:64px 66px 70px}
+  .cover .wrap{display:flex;flex-direction:column;justify-content:center}
+  .cover-grid{gap:44px}
+  .cover h1{font-size:92px}
+  .nums{margin-top:44px}
+  /* 장마다 쪽 안에 맞춤 */
+  .glance .shot button{aspect-ratio:16/9}
+  .loop{margin-top:26px}
+  .match-grid{grid-template-areas:"ov sd" "ft sd";gap:22px 30px}
+  .m-side{grid-template-columns:1fr;gap:14px}
+  .club .split{grid-template-columns:minmax(0,5fr) minmax(0,7fr)}
+  .card{padding:14px 18px}
+  .card p{font-size:14px;line-height:1.55}
+  .split .cards{gap:12px}
+}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="back" href="index.html"><span class="mark" aria-hidden="true"></span>바벨 홈으로</a>
+    <span class="doc-name"><em>풋볼러시</em> 게임소개서</span>
+    <nav class="toc" aria-label="소개서 목차">
+      <a href="#glance">한눈에</a>
+      <a href="#match">경기</a>
+      <a href="#compete">대회</a>
+      <a href="#recruit">영입</a>
+      <a href="#club">구단 운영</a>
+      <a href="#link">모바일 연결</a>
+      <a href="#make">제작</a>
+      <a href="#release">출시 · 문의</a>
+      <a class="to-manual" href="football-rush-manual.html">게임플레이 매뉴얼 →</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <!-- 표지 -->
+  <section class="page cover" id="cover" aria-labelledby="t-cover">
+    <div class="wrap">
+      <div class="cover-grid">
+        <div>
+          <div class="bug"><span class="plat">PC · Steam</span><span class="state">출시 준비 중</span></div>
+          <p class="kicker">바벨 게임소개서 · 2026년 11월</p>
+          <h1 id="t-cover">풋볼러시</h1>
+          <p class="en">Football Rush · 3D Football Manager</p>
+          <p class="lead">작은 구단 하나를 맡아 선수를 모으고 키워 세계 무대 정상까지 올라가는 PC용 3D 축구 매니저 게임입니다. 모든 경기는 실시간 3D로 펼쳐지고, 감독은 경기를 지켜보며 작전을 바꿉니다.</p>
+        </div>
+        <figure class="shot cover-shot">
+          <button type="button" data-full="img/fr_match.webp" aria-label="크게 보기: 실시간 3D 경기"><img src="img/fr_match.webp" width="1600" height="900" alt="풋볼러시 실시간 3D 경기 화면. 경기장 위에서 두 팀 선수들이 공을 다투고 있습니다."></button>
+        </figure>
+      </div>
+      <dl class="nums" aria-label="숫자로 보는 풋볼러시">
+        <div><dt>지원 언어</dt><dd>20</dd></div>
+        <div><dt>도전 모드 대회</dt><dd>45</dd></div>
+        <div><dt>세계 구단</dt><dd>243</dd></div>
+        <div><dt>세계 선수</dt><dd>3,657</dd></div>
+        <div><dt>감독 전술 스킬</dt><dd>17</dd></div>
+        <div><dt>포메이션</dt><dd>12</dd></div>
+      </dl>
+    </div>
+    <div class="print-foot"><span>풋볼러시 게임소개서 · 바벨</span><span>게임 화면은 개발 중인 화면입니다</span></div>
+  </section>
+
+  <!-- 01 한눈에 -->
+  <section class="page" id="glance" aria-labelledby="t-glance">
+    <div class="wrap">
+      <header class="chap-head">
+        <div class="chap"><span class="no">01</span><span class="nm">한눈에</span><span class="en">Overview</span></div>
+        <h2 id="t-glance">작은 구단을 세계 정상으로 이끄는 감독이 됩니다</h2>
+      </header>
+      <div class="glance">
+        <dl class="spec">
+          <div><dt>장르</dt><dd>3D 축구 매니저 · 구단 운영</dd></div>
+          <div><dt>플랫폼</dt><dd>PC (Windows 10 · 11, 64비트) · Steam</dd></div>
+          <div><dt>플레이</dt><dd>혼자 즐기는 단독판 · 스팀 친구와 겨루는 온라인 리그</dd></div>
+          <div><dt>언어</dt><dd>한국어 · 영어 · 일본어 · 중국어 등 20개 언어</dd></div>
+          <div><dt>개발</dt><dd>바벨 · 전라남도의 1인 게임 개발사</dd></div>
+          <div><dt>현재</dt><dd>개발 중 · Steam 출시 준비</dd></div>
+        </dl>
+        <figure class="shot">
+          <button type="button" data-full="img/fr_home.webp" aria-label="크게 보기: 홈 화면"><img src="img/fr_home.webp" width="1280" height="720" alt="풋볼러시 홈 화면. 구단 정보, 대표 선수, 공지사항, 다음 리그 경기, 더 보기 메뉴가 한 화면에 있습니다."></button>
+          <figcaption><b>홈 화면</b>구단 정보 · 오늘 할 일 · 다음 경기를 한 화면에서 봅니다.</figcaption>
+        </figure>
+      </div>
+      <ol class="loop" aria-label="게임의 흐름">
+        <li><span class="n">STEP 1</span><b>영입합니다</b><span>스카우트와 경매, 유소년으로 선수를 데려옵니다.</span></li>
+        <li><span class="n">STEP 2</span><b>키웁니다</b><span>훈련과 카드 합성 · 강화로 능력치를 올립니다.</span></li>
+        <li><span class="n">STEP 3</span><b>지휘합니다</b><span>실시간 3D 경기에서 전술과 작전을 지시합니다.</span></li>
+        <li><span class="n">STEP 4</span><b>올라갑니다</b><span>리그 승격과 세계 대회 우승으로 구단을 키웁니다.</span></li>
+      </ol>
+    </div>
+    <div class="print-foot"><span>풋볼러시 게임소개서 · 바벨</span><span class="pg">01 · 한눈에</span></div>
+  </section>
+
+  <!-- 02 경기 -->
+  <section class="page" id="match" aria-labelledby="t-match">
+    <div class="wrap">
+      <header class="chap-head">
+        <div class="chap"><span class="no">02</span><span class="nm">경기</span><span class="en">Match day</span></div>
+        <h2 id="t-match">모든 경기를 실시간 3D로 지켜봅니다</h2>
+        <p class="desc">경기 계산은 따로 만든 매치 엔진이 맡고, 화면에서는 22명의 선수가 3D로 뛰어다닙니다. 감독은 경기를 보면서 작전을 지시하고, 골 장면은 리플레이로 다시 봅니다.</p>
+      </header>
+      <div class="match-grid">
+        <figure class="shot r169 m-ov">
+          <button type="button" data-full="img/fr_overview.webp" aria-label="크게 보기: 경기장 전체 시점"><img src="img/fr_overview.webp" width="1600" height="900" alt="풋볼러시 경기장 전체를 위에서 내려다보는 시점의 경기 화면"></button>
+          <figcaption><b>경기장 전체 시점</b>22명의 움직임을 한눈에 봅니다.</figcaption>
+        </figure>
+        <ul class="feat m-ft">
+          <li><span><b>포메이션 12가지</b>와 팀 전술 · 개인 전술 · 세트피스를 정합니다.</span></li>
+          <li><span><b>감독 전술 스킬 17가지</b> — 감독 레벨이 10 오를 때마다 하나씩 익히고, 경기에는 6가지를 골라 들고 갑니다.</span></li>
+          <li><span><b>경기 중 작전 지시</b>로 흐름을 바꿉니다.</span></li>
+          <li><span><b>음성 중계</b> — 캐스터와 해설위원이 경기 상황을 중계합니다.</span></li>
+          <li><span><b>골 장면 리플레이</b>로 결정적인 순간을 다시 봅니다.</span></li>
+        </ul>
+        <div class="m-side">
+        <figure class="shot r169">
+          <button type="button" data-full="img/fr_tactics.webp" aria-label="크게 보기: 전술 화면"><img src="img/fr_tactics.webp" width="1280" height="720" alt="전술 화면. 4-4-2 포메이션으로 선수가 배치된 경기장과 팀 전술 설정 칸이 있습니다."></button>
+          <figcaption><b>전술</b>선발 11명과 포메이션, 팀 지시를 정합니다.</figcaption>
+        </figure>
+        <figure class="shot r169">
+          <button type="button" data-full="img/fr_skills.webp" aria-label="크게 보기: 감독 전술 스킬"><img src="img/fr_skills.webp" width="1280" height="720" alt="구단 페이지의 감독 전술 스킬 화면. 17가지 전술 가운데 왼쪽 돌파와 오른쪽 돌파를 익혀 경기에 들고 가는 칸에 넣었습니다."></button>
+          <figcaption><b>전술 스킬</b>익힌 전술을 경기에 들고 가는 6칸에 넣습니다.</figcaption>
+        </figure>
+        </div>
+      </div>
+    </div>
+    <div class="print-foot"><span>풋볼러시 게임소개서 · 바벨</span><span class="pg">02 · 경기</span></div>
+  </section>
+
+  <!-- 03 대회 -->
+  <section class="page compete" id="compete" aria-labelledby="t-compete">
+    <div class="wrap">
+      <header class="chap-head">
+        <div class="chap"><span class="no">03</span><span class="nm">대회</span><span class="en">Competitions</span></div>
+        <h2 id="t-compete">한 시즌 내내 겨룰 무대가 있습니다</h2>
+      </header>
+      <div class="pair">
+        <figure class="shot r169">
+          <button type="button" data-full="img/fr_super.webp" aria-label="크게 보기: 슈퍼리그"><img src="img/fr_super.webp" width="1280" height="720" alt="슈퍼리그 화면. 8개 구단의 조별 순위표와 다음 경기, 이번 주 라운드 일정이 있습니다."></button>
+          <figcaption><b>슈퍼리그</b>세계 여러 나라의 구단과 한 조가 되어 일주일을 겨룹니다.</figcaption>
+        </figure>
+        <figure class="shot r169">
+          <button type="button" data-full="img/fr_challenge.webp" aria-label="크게 보기: 도전 모드"><img src="img/fr_challenge.webp" width="1280" height="720" alt="도전 모드 화면. 스코틀랜드, 벨기에, 네덜란드 1부 리그 같은 유럽 리그 대회가 단계별로 놓여 있습니다."></button>
+          <figcaption><b>도전 모드</b>유럽 리그부터 국가대표 대회까지 단계별로 도전합니다.</figcaption>
+        </figure>
+      </div>
+      <div class="cards">
+        <article class="card hot"><h3>정규 리그 · 컵 <small>LEAGUE</small></h3><p>나라별 리그에서 승격과 강등을 겪으며 1부를 노리고, 시즌마다 단판 토너먼트 컵 대회가 열립니다.</p></article>
+        <article class="card hot"><h3>슈퍼리그 <small>WEEKLY</small></h3><p>8개 구단이 한 조가 되어 일주일 동안 매일 밤 9시에 한 라운드씩, 모두 7라운드를 치릅니다.</p></article>
+        <article class="card hot"><h3>도전 모드 <small>45 CUPS</small></h3><p>유럽 리그 · 국가대표 · U-23 · 아시아 · 중동 등 8개 분야 45개 대회를 단계별로 정복합니다.</p></article>
+        <article class="card"><h3>래더 <small>MONTHLY</small></h3><p>비슷한 순위의 구단에 도전하는 월간 순위전입니다. 참가비를 걸고, 이기면 두 배로 돌려받습니다.</p></article>
+        <article class="card"><h3>친선 경기 <small>FRIENDLY</small></h3><p>부담 없이 새 전술과 선수를 시험하는 연습 경기입니다.</p></article>
+        <article class="card"><h3>온라인 리그 <small>STEAM</small></h3><p>스팀 친구와 방을 만들어 리그와 토너먼트를 엽니다.</p></article>
+      </div>
+    </div>
+    <div class="print-foot"><span>풋볼러시 게임소개서 · 바벨</span><span class="pg">03 · 대회</span></div>
+  </section>
+
+  <!-- 04 영입 -->
+  <section class="page" id="recruit" aria-labelledby="t-recruit">
+    <div class="wrap">
+      <header class="chap-head">
+        <div class="chap"><span class="no">04</span><span class="nm">선수 영입</span><span class="en">Transfers</span></div>
+        <h2 id="t-recruit">선수를 데려오는 길이 여럿입니다</h2>
+      </header>
+      <div class="split">
+        <div class="cards">
+          <article class="card hot"><h3>유소년 경매</h3><p>매일 낮 12시에 유소년 선수 한 명이 올라옵니다. 1성으로 보여도 키우면 숨은 잠재력까지 별이 오릅니다.</p></article>
+          <article class="card hot"><h3>유망주 키우기</h3><p>8살 유망주를 12살까지 직접 키워 유소년 경매에 올립니다.</p></article>
+          <article class="card"><h3>자유계약 경매</h3><p>다른 구단의 선수를 COIN으로 데려오고, 내 선수를 올려 팔 수도 있습니다.</p></article>
+          <article class="card"><h3>월드계약선수</h3><p>「FC 축구선수 키우기」에서 키운 대표 선수가 매주 새 목록으로 올라옵니다.</p></article>
+          <article class="card"><h3>스카우트 · 선수 팩</h3><p>스카우트 보고서와 선수 팩으로 새 선수 카드를 얻습니다.</p></article>
+          <article class="card"><h3>선수 카드</h3><p>1성부터 6성까지 있고, 합성과 강화로 더 강하게 만듭니다.</p></article>
+        </div>
+        <div class="stack">
+          <figure class="shot r169">
+            <button type="button" data-full="img/fr_youth.webp" aria-label="크게 보기: 유소년 경매"><img src="img/fr_youth.webp" width="1280" height="720" alt="유소년 경매 화면. 3D 거리에서 유소년 선수가 공을 차고, 오른쪽에 입찰 칸이 있습니다."></button>
+            <figcaption><b>유소년 경매</b>매일 올라오는 유소년 선수에게 입찰합니다.</figcaption>
+          </figure>
+          <div class="duo">
+            <figure class="shot">
+              <button type="button" data-full="img/fr_cards.webp" aria-label="크게 보기: 선수단 카드"><img src="img/fr_cards.webp" width="1000" height="840" alt="선수단 화면. 포지션과 레벨, 능력치가 적힌 선수 카드가 줄지어 있습니다."></button>
+              <figcaption><b>선수단</b>포지션 · 레벨 · 종합 능력치</figcaption>
+            </figure>
+            <figure class="shot contain">
+              <button type="button" data-full="img/fr_scout.webp" aria-label="크게 보기: 스카우트 결과"><img src="img/fr_scout.webp" width="640" height="950" alt="스카우트 결과 화면. 레벨 8 골키퍼 선수 카드를 영입했습니다."></button>
+              <figcaption><b>스카우트</b>새로 영입한 선수 카드</figcaption>
+            </figure>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="print-foot"><span>풋볼러시 게임소개서 · 바벨</span><span class="pg">04 · 선수 영입</span></div>
+  </section>
+
+  <!-- 05 구단 운영 -->
+  <section class="page club" id="club" aria-labelledby="t-club">
+    <div class="wrap">
+      <header class="chap-head">
+        <div class="chap"><span class="no">05</span><span class="nm">구단 운영</span><span class="en">Club</span></div>
+        <h2 id="t-club">경기장 밖에서도 감독입니다</h2>
+      </header>
+      <div class="split">
+        <div class="stack">
+          <figure class="shot r169">
+            <button type="button" data-full="img/fr_training.webp" aria-label="크게 보기: 훈련"><img src="img/fr_training.webp" width="1280" height="720" alt="훈련 화면. 3D 훈련장에서 선수가 훈련하고, 아래에 쉬움 · 보통 · 어려움 훈련 칸이 있습니다."></button>
+            <figcaption><b>훈련</b>3D 훈련장에서 훈련 강도를 골라 경험치를 모읍니다.</figcaption>
+          </figure>
+          <figure class="shot r169">
+            <button type="button" data-full="img/fr_facility.webp" aria-label="크게 보기: 구단 시설"><img src="img/fr_facility.webp" width="1280" height="720" alt="구단 시설 화면. 경기장, 훈련장, 유소년 아카데미, 의료실의 단계와 다음 단계 효과가 적혀 있습니다."></button>
+            <figcaption><b>구단 시설</b>경기장 · 훈련장 · 유소년 아카데미 · 의료실</figcaption>
+          </figure>
+        </div>
+        <div class="cards">
+          <article class="card hot"><h3>훈련</h3><p>쉬움 · 보통 · 어려움 훈련으로 경험치를 모아 공격 · 수비 · 신체 · 기술 · 정신 능력치를 올립니다.</p></article>
+          <article class="card hot"><h3>구단 시설</h3><p>네 가지 시설을 5단계까지 지어 홈 경기 COIN · 훈련 경험치 · 컨디션 회복 같은 효과를 올립니다.</p></article>
+          <article class="card"><h3>선수의 마음</h3><p>기차와 자동차가 오가는 3D 도시의 구단 사무실에서 선수와 면담하고, 팀 토크와 기자회견으로 분위기를 이끕니다.</p></article>
+          <article class="card"><h3>부상과 징계</h3><p>부상과 징계가 가볍게 반영되어 선수 운용에 변화를 줍니다.</p></article>
+          <article class="card"><h3>시즌 이야기</h3><p>시상식과 트로피, 구단 연표, 라이벌 기록이 시즌마다 쌓입니다.</p></article>
+          <article class="card"><h3>미션 · 경기지원</h3><p>일일 미션을 하고, 정규리그 경기 결과를 맞히는 경기지원으로 COIN을 모읍니다.</p></article>
+        </div>
+      </div>
+    </div>
+    <div class="print-foot"><span>풋볼러시 게임소개서 · 바벨</span><span class="pg">05 · 구단 운영</span></div>
+  </section>
+
+  <!-- 06 모바일 연결 -->
+  <section class="page" id="link" aria-labelledby="t-link">
+    <div class="wrap">
+      <header class="chap-head">
+        <div class="chap"><span class="no">06</span><span class="nm">모바일 연결</span><span class="en">One football world</span></div>
+        <h2 id="t-link">모바일 육성 게임과 한 축구 세계를 나눕니다</h2>
+        <p class="desc">바벨이 함께 만드는 안드로이드 게임 「FC 축구선수 키우기」에서 키운 선수가 풋볼러시의 이적 시장에 나옵니다. 모바일에서 한 선수를 키우는 감독과 PC에서 구단을 운영하는 감독이 같은 선수 시장에서 만납니다.</p>
+      </header>
+      <div class="link-wrap">
+        <div>
+          <div class="link-row">
+            <div class="link-step">
+              <div class="no">01</div>
+              <h3>모바일에서 선수를 키웁니다</h3>
+              <p>16살 무명 선수를 훈련과 경기로 키워 프로 데뷔, 국가대표, 은퇴까지 함께합니다.</p>
+              <span class="who fc">FC 축구선수 키우기</span>
+            </div>
+            <div class="link-step">
+              <div class="no">02</div>
+              <h3>대표 선수를 온라인에 올립니다</h3>
+              <p>감독마다 키운 선수 가운데 대표 선수 한 명(4성 이하)을 올립니다. 실력 그대로 카드가 됩니다.</p>
+              <span class="who fc">FC 축구선수 키우기</span>
+            </div>
+            <div class="link-step">
+              <div class="no">03</div>
+              <h3>PC 구단이 경매로 영입합니다</h3>
+              <p>매주 새 목록이 열리는 「월드계약선수」에서 슈퍼리그 구단들과 함께 입찰해 그 선수를 데려옵니다.</p>
+              <span class="who fr">풋볼러시</span>
+            </div>
+          </div>
+          <p class="note">두 게임을 잇는 온라인 기능은 지금 시험하고 있으며, 출시 때 내용이 바뀔 수 있습니다.</p>
+        </div>
+        <div>
+          <div class="phone"><img src="img/fc_title.webp" width="440" height="1013" alt="FC 축구선수 키우기 시작 화면. 16살 스트라이커 강하늘, 능력치 45."></div>
+          <p class="phone-cap">FC 축구선수 키우기 · Android</p>
+        </div>
+      </div>
+    </div>
+    <div class="print-foot"><span>풋볼러시 게임소개서 · 바벨</span><span class="pg">06 · 모바일 연결</span></div>
+  </section>
+
+  <!-- 07 제작 -->
+  <section class="page" id="make" aria-labelledby="t-make">
+    <div class="wrap">
+      <header class="chap-head">
+        <div class="chap"><span class="no">07</span><span class="nm">제작</span><span class="en">How it is made</span></div>
+        <h2 id="t-make">엔진과 도구를 직접 만듭니다</h2>
+        <p class="desc">풋볼러시는 바벨이 직접 만든 엔진과 편집기로 개발합니다. 경기장과 연출, 데이터와 번역까지 손으로 다듬고, 저사양 PC에서도 잘 돌아가도록 다듬는 일을 가장 중요하게 여깁니다.</p>
+      </header>
+      <div class="make">
+        <div class="tools">
+          <div class="tool"><b>자체 3D 엔진</b><span>경기장 · 3D 도시 · 카드 속 3D 선수까지 직접 만든 엔진으로 그립니다.</span></div>
+          <div class="tool"><b>매치 엔진</b><span>경기 계산만 맡는 엔진을 따로 두어 실시간 경기와 자동 진행 경기를 처리합니다.</span></div>
+          <div class="tool"><b>맵 에디터</b><span>경기장과 선수관리 도시를 배치하는 전용 편집기입니다.</span></div>
+          <div class="tool"><b>모션 에디터</b><span>드리블 · 슈팅 같은 선수 동작을 다듬습니다.</span></div>
+          <div class="tool"><b>임팩트 툴</b><span>슈팅과 골 장면의 이펙트를 만듭니다.</span></div>
+          <div class="tool"><b>관리툴 · 번역 도구</b><span>선수와 구단 데이터를 다루고, 20개 언어 문구가 화면에 맞는지 검사합니다.</span></div>
+        </div>
+        <div>
+          <figure class="shot r169">
+            <button type="button" data-full="img/fr_title.webp" aria-label="크게 보기: 시작 화면"><img src="img/fr_title.webp" width="1600" height="900" alt="풋볼러시 시작 화면. 빨간 유니폼을 입은 선수가 공을 들고 있습니다."></button>
+            <figcaption><b>시작 화면</b>카드 속 선수도 3D로 움직입니다.</figcaption>
+          </figure>
+          <div class="facts" aria-label="제작 요약">
+            <div class="fact"><div class="n">20<small>개</small></div><div class="l">지원 언어</div></div>
+            <div class="fact"><div class="n">7,000<small>+</small></div><div class="l">언어마다 번역한 문구</div></div>
+            <div class="fact"><div class="n">418<small>줄</small></div><div class="l">음성 중계 대사</div></div>
+            <div class="fact"><div class="n">1<small>인</small></div><div class="l">기획부터 개발까지</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="print-foot"><span>풋볼러시 게임소개서 · 바벨</span><span class="pg">07 · 제작</span></div>
+  </section>
+
+  <!-- 08 출시 · 문의 -->
+  <section class="page" id="release" aria-labelledby="t-release">
+    <div class="wrap">
+      <header class="chap-head">
+        <div class="chap"><span class="no">08</span><span class="nm">출시 · 문의</span><span class="en">Release</span></div>
+        <h2 id="t-release">Steam 출시를 준비하고 있습니다</h2>
+      </header>
+      <div class="release">
+        <div>
+          <dl class="spec">
+            <div><dt>출시 순서</dt><dd>혼자 즐기는 단독판을 먼저 Steam에 출시하고, 다른 감독들과 함께하는 온라인판은 구성을 달리해 그 뒤에 선보일 계획입니다.</dd></div>
+            <div><dt>플랫폼</dt><dd>PC · Steam (Windows 10 · 11, 64비트)</dd></div>
+            <div><dt>Steam 기능</dt><dd>클라우드 저장 · 도전과제 · 스팀 친구와 온라인 리그</dd></div>
+            <div><dt>일정</dt><dd>출시 일정은 정해지는 대로 이 소개서에서 알려 드리겠습니다.</dd></div>
+            <div><dt>언어</dt><dd>
+              <div class="langs" aria-label="지원 언어 20개">
+                <span>한국어</span><span>영어</span><span>일본어</span><span>중국어 간체</span><span>중국어 번체</span><span>스페인어</span><span>프랑스어</span><span>이탈리아어</span><span>포르투갈어</span><span>브라질 포르투갈어</span><span>러시아어</span><span>폴란드어</span><span>네덜란드어</span><span>덴마크어</span><span>노르웨이어</span><span>스웨덴어</span><span>그리스어</span><span>터키어</span><span>베트남어</span><span>태국어</span>
+              </div>
+            </dd></div>
+          </dl>
+        </div>
+        <div class="mailbox">
+          <div class="k">문의 메일</div>
+          <div class="v"><a class="mail" href="mailto:awakenbrain@naver.com">awakenbrain@naver.com</a></div>
+          <div class="copy-row"><button type="button" class="copy" id="copy-mail">주소 복사</button><span id="copy-msg" aria-live="polite"></span></div>
+          <hr>
+          <div class="topics">
+            <div><b>투자</b><span>Steam 출시를 함께 준비할 투자 제안</span></div>
+            <div><b>제휴</b><span>지원사업 · 공동 홍보 · 현지화 협력</span></div>
+            <div><b>취재</b><span>언론 · 유튜브 · 커뮤니티 소개와 인터뷰</span></div>
+          </div>
+          <hr>
+          <div class="k">개발사</div>
+          <div class="v" style="font-size:18px">바벨 · 전라남도 · 개인사업자</div>
+          <div style="display:flex;flex-wrap:wrap;gap:10px"><a class="home-link" href="football-rush-manual.html">게임플레이 매뉴얼 보기</a><a class="home-link" href="index.html" style="background:var(--stand);border:1px solid var(--line)">바벨 홈으로 돌아가기</a></div>
+        </div>
+      </div>
+      <div class="finale">
+        <img src="img/fr_overview.webp" width="1600" height="900" alt="" loading="lazy">
+        <div>
+          <b>내가 키운 선수가 <em>경기장을 뜁니다</em></b>
+          <span>작은 구단의 첫 시즌부터 세계 정상까지, 풋볼러시가 함께합니다.</span>
+        </div>
+      </div>
+    </div>
+    <div class="print-foot"><span>풋볼러시 게임소개서 · 바벨</span><span class="pg">08 · 출시 · 문의</span></div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>© 2026 바벨. 모든 권리를 가집니다.</span>
+    <span>게임 화면은 개발 중인 화면이며 출시 때 달라질 수 있습니다.</span>
+  </div>
+</footer>
+
+<div class="viewer" id="viewer" role="dialog" aria-modal="true" aria-label="화면 크게 보기">
+  <button type="button" class="close" id="viewer-close">닫기 ✕</button>
+  <figure>
+    <img id="viewer-img" src="data:," alt="">
+    <figcaption id="viewer-cap"></figcaption>
+  </figure>
+</div>
+
+<script>
+(function(){
+  var viewer=document.getElementById('viewer');
+  var vimg=document.getElementById('viewer-img');
+  var vcap=document.getElementById('viewer-cap');
+  var closeBtn=document.getElementById('viewer-close');
+  var lastBtn=null;
+  function open(btn){
+    lastBtn=btn;
+    var img=btn.querySelector('img');
+    vimg.src=btn.getAttribute('data-full');
+    vimg.alt=img?img.alt:'';
+    var cap=btn.parentElement.querySelector('figcaption');
+    vcap.textContent=cap?cap.textContent:(img?img.alt:'');
+    viewer.classList.add('open');
+    closeBtn.focus();
+  }
+  function close(){
+    viewer.classList.remove('open');
+    if(lastBtn){lastBtn.focus();}
+  }
+  document.querySelectorAll('[data-full]').forEach(function(b){
+    b.addEventListener('click',function(){open(b);});
+  });
+  closeBtn.addEventListener('click',close);
+  viewer.addEventListener('click',function(e){ if(e.target===viewer){close();} });
+  document.addEventListener('keydown',function(e){ if(e.key==='Escape'&&viewer.classList.contains('open')){close();} });
+  var copyBtn=document.getElementById('copy-mail');
+  var copyMsg=document.getElementById('copy-msg');
+  copyBtn.addEventListener('click',function(){
+    var addr='awakenbrain@naver.com';
+    function fail(){ copyMsg.textContent='복사되지 않았습니다. 주소를 직접 선택해 복사해 주십시오.'; }
+    try{
+      if(navigator.clipboard&&navigator.clipboard.writeText){
+        navigator.clipboard.writeText(addr).then(function(){ copyMsg.textContent='메일 주소를 복사했습니다.'; },fail);
+      }else{ fail(); }
+    }catch(e){ fail(); }
+  });
+})();
+</script>
+</body>
+</html>
